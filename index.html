@@ -2,11 +2,11 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Admin Panel — Betta Market Batam</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Lora:wght@600;700&display=swap" rel="stylesheet">
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
   --blue:#1a6bcc;--blue-dark:#1254a8;--blue-light:#e8f1fc;--blue-soft:#f0f6ff;
   --white:#fff;--surface:#f0f4f8;--border:#dde6f5;--text:#0f1c2e;--text2:#4a6080;--text3:#8fa3be;
@@ -14,8 +14,10 @@
   --shadow-sm:0 1px 4px rgba(26,107,204,.08);--shadow:0 4px 16px rgba(26,107,204,.10);--shadow-lg:0 12px 40px rgba(26,107,204,.15);
   --r:14px;--r-sm:10px;--r-full:999px
 }
-body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--surface);color:var(--text);min-height:100vh}
-button,input{font-family:inherit}
+html{font-size:16px;-webkit-text-size-adjust:100%}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--surface);color:var(--text);min-height:100vh;overflow-x:hidden}
+button,input,select,textarea{font-family:inherit}
+::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
 
 /* LOADING */
 .loading-ov{position:fixed;inset:0;background:rgba(255,255,255,.92);z-index:9999;display:none;align-items:center;justify-content:center;flex-direction:column;gap:12px}
@@ -29,88 +31,94 @@ button,input{font-family:inherit}
 .err-banner.show{display:block}
 
 /* TOPBAR */
-.topbar{position:sticky;top:0;z-index:100;background:linear-gradient(135deg,#0f1c2e,#1a3a6e);padding:0 16px;height:56px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 12px rgba(15,28,46,.3)}
-.tb-brand{display:flex;align-items:center;gap:9px}
-.tb-ico{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,#f59e0b,#d97706);display:flex;align-items:center;justify-content:center;font-size:15px}
-.tb-name{font-family:'Lora',serif;font-size:16px;font-weight:700;color:var(--white)}
+.topbar{position:sticky;top:0;z-index:100;background:linear-gradient(135deg,#0f1c2e,#1a3a6e);padding:0 12px;height:52px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 12px rgba(15,28,46,.3)}
+.tb-brand{display:flex;align-items:center;gap:8px}
+.tb-ico{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#f59e0b,#d97706);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.tb-name{font-family:'Lora',serif;font-size:15px;font-weight:700;color:var(--white)}
 .tb-sub{font-size:9px;color:rgba(255,255,255,.5);display:block;line-height:1.2}
-.tb-right{display:flex;align-items:center;gap:8px}
-.btn-refresh{background:rgba(255,255,255,.15);color:white;border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s}
+.tb-right{display:flex;align-items:center;gap:6px}
+.btn-refresh{background:rgba(255,255,255,.15);color:white;border:1px solid rgba(255,255,255,.2);border-radius:7px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap}
 .btn-refresh:hover{background:rgba(255,255,255,.25)}
+#last-refresh{color:rgba(255,255,255,.4);font-size:9px;display:none}
+@media(min-width:480px){#last-refresh{display:inline}}
 
-.content{padding:14px;max-width:700px;margin:0 auto}
+/* CONTENT */
+.content{padding:12px;max-width:600px;margin:0 auto}
 
 /* STATS */
-.admin-hdr{background:linear-gradient(135deg,#0f1c2e,#1a3a6e);border-radius:var(--r);padding:18px;margin-bottom:14px;color:var(--white)}
-.admin-hdr h2{font-family:'Lora',serif;font-size:18px;margin-bottom:2px}
-.admin-hdr p{font-size:12px;opacity:.6}
-.astats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
-.asc{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r);padding:14px}
-.asc .n{font-weight:800;font-size:26px;margin-bottom:2px}.asc .l{font-size:11px;color:var(--text3)}
+.admin-hdr{background:linear-gradient(135deg,#0f1c2e,#1a3a6e);border-radius:var(--r);padding:16px;margin-bottom:12px;color:var(--white)}
+.admin-hdr h2{font-family:'Lora',serif;font-size:17px;margin-bottom:2px}
+.admin-hdr p{font-size:11px;opacity:.6}
+.astats{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:12px}
+.asc{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r);padding:12px}
+.asc .n{font-weight:800;font-size:24px;margin-bottom:1px}.asc .l{font-size:10px;color:var(--text3)}
 .asc.blue .n{color:var(--blue)}.asc.red .n{color:var(--red)}.asc.green .n{color:var(--green)}.asc.gold .n{color:var(--gold)}
 
 /* TABS */
-.nav-tabs{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;scrollbar-width:none}
+.nav-tabs{display:flex;gap:5px;margin-bottom:12px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
 .nav-tabs::-webkit-scrollbar{display:none}
-.ntab{padding:8px 16px;border-radius:var(--r-full);border:1.5px solid var(--border);font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;background:var(--white);color:var(--text2);transition:all .2s}
+.ntab{padding:7px 13px;border-radius:var(--r-full);border:1.5px solid var(--border);font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;background:var(--white);color:var(--text2);transition:all .2s;flex-shrink:0}
 .ntab.active{background:var(--blue);border-color:var(--blue);color:var(--white)}
 
 /* SEARCH */
-.sb{display:flex;gap:7px;margin-bottom:12px}
-.sb input{flex:1;background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:10px 13px;font-size:13px;outline:none;transition:border .2s}
+.sb{display:flex;gap:7px;margin-bottom:10px}
+.sb input{flex:1;background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:9px 12px;font-size:13px;outline:none;transition:border .2s;min-width:0}
 .sb input:focus{border-color:var(--blue)}
-.sb button{padding:10px 14px;background:var(--blue);border:none;border-radius:var(--r-sm);color:var(--white);font-size:15px;cursor:pointer}
+.sb button{padding:9px 13px;background:var(--blue);border:none;border-radius:var(--r-sm);color:var(--white);font-size:14px;cursor:pointer;flex-shrink:0}
 
 /* CARD */
 .card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:12px}
-.card-hdr{padding:12px 14px;border-bottom:1px solid var(--border);font-weight:800;font-size:13px;display:flex;justify-content:space-between;align-items:center;background:var(--blue-soft)}
+.card-hdr{padding:10px 13px;border-bottom:1px solid var(--border);font-weight:800;font-size:12px;display:flex;justify-content:space-between;align-items:center;background:var(--blue-soft)}
 .card-hdr span{color:var(--text3);font-size:11px;font-weight:500}
 
-/* USER ROWS */
-.urow{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-bottom:1px solid #f0f5ff;gap:8px}
-.urow:last-child{border-bottom:none}.urow:hover{background:var(--blue-soft)}
-.urow-l{display:flex;align-items:center;gap:9px;flex:1;min-width:0}
+/* USER ROWS — mobile stacked layout */
+.urow{display:flex;flex-direction:column;padding:11px 13px;border-bottom:1px solid #f0f5ff;gap:8px;transition:background .15s}
+.urow:last-child{border-bottom:none}.urow:active{background:var(--blue-soft)}
+.urow-top{display:flex;align-items:center;gap:9px}
 .urow-av{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;color:var(--white);flex-shrink:0}
-.urow-name{font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.urow-ph{font-size:11px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.urow-r{display:flex;align-items:center;gap:5px;flex-shrink:0}
-.sbadge{padding:3px 7px;border-radius:var(--r-full);font-size:10px;font-weight:800;white-space:nowrap}
+.urow-info{flex:1;min-width:0}
+.urow-name{font-weight:700;font-size:13px;display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.urow-ph{font-size:11px;color:var(--text3);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.urow-status{display:flex;align-items:center;gap:5px;flex-shrink:0}
+/* Actions row at bottom of card */
+.urow-actions{display:flex;gap:5px;flex-wrap:wrap}
+.sbadge{padding:3px 7px;border-radius:var(--r-full);font-size:10px;font-weight:800;white-space:nowrap;flex-shrink:0}
 .sb-active{background:var(--green-light);color:var(--green)}.sb-blocked{background:var(--red-light);color:var(--red)}
-.btns{display:flex;gap:4px}
-.bsm{padding:5px 9px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;border:none;transition:all .15s;white-space:nowrap}
-.b-block{background:var(--red-light);color:var(--red)}.b-block:hover{background:var(--red);color:var(--white)}
-.b-unblock{background:var(--green-light);color:var(--green)}.b-unblock:hover{background:var(--green);color:var(--white)}
-.b-del{background:var(--surface);color:var(--text3)}.b-del:hover{background:var(--red);color:var(--white)}
-.b-info{background:var(--blue-light);color:var(--blue)}.b-info:hover{background:var(--blue);color:var(--white)}
+.btns{display:flex;gap:4px;flex-wrap:wrap}
+.bsm{padding:5px 10px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;border:none;transition:all .15s;white-space:nowrap;flex-shrink:0}
+.b-block{background:var(--red-light);color:var(--red)}.b-block:hover,.b-block:active{background:var(--red);color:var(--white)}
+.b-unblock{background:var(--green-light);color:var(--green)}.b-unblock:hover,.b-unblock:active{background:var(--green);color:var(--white)}
+.b-del{background:var(--surface);color:var(--text3)}.b-del:hover,.b-del:active{background:var(--red);color:var(--white)}
+.b-info{background:var(--blue-light);color:var(--blue)}.b-info:hover,.b-info:active{background:var(--blue);color:var(--white)}
 
 /* POST ROWS */
-.prow{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-bottom:1px solid #f0f5ff;gap:10px}
-.prow:last-child{border-bottom:none}.prow:hover{background:var(--blue-soft)}
-.prow-l{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
-.prow-thumb{width:46px;height:46px;border-radius:9px;background:var(--blue-soft);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;overflow:hidden}
+.prow{display:flex;align-items:flex-start;justify-content:space-between;padding:10px 13px;border-bottom:1px solid #f0f5ff;gap:9px}
+.prow:last-child{border-bottom:none}.prow:active{background:var(--blue-soft)}
+.prow-l{display:flex;align-items:center;gap:9px;flex:1;min-width:0}
+.prow-thumb{width:44px;height:44px;border-radius:8px;background:var(--blue-soft);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;overflow:hidden}
 .prow-thumb img{width:100%;height:100%;object-fit:cover}
-.prow-title{font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.prow-meta{font-size:11px;color:var(--text3)}
-.ptag{display:inline-block;padding:2px 7px;border-radius:4px;font-size:9px;font-weight:800;text-transform:uppercase}
+.prow-title{font-weight:700;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px}
+.prow-meta{font-size:10px;color:var(--text3)}
+.ptag{display:inline-block;padding:2px 6px;border-radius:4px;font-size:9px;font-weight:800;text-transform:uppercase}
 .pt-jual{background:var(--blue);color:var(--white)}.pt-lelang{background:var(--red);color:var(--white)}.pt-beli{background:var(--gold);color:var(--white)}.pt-sold{background:var(--green);color:var(--white)}
 
 /* NOTIF ROWS */
-.nrow{display:flex;gap:10px;padding:12px 14px;border-bottom:1px solid #f0f5ff;align-items:flex-start}
+.nrow{display:flex;gap:10px;padding:11px 13px;border-bottom:1px solid #f0f5ff;align-items:flex-start}
 .nrow:last-child{border-bottom:none}
-.nrow-ico{width:34px;height:34px;border-radius:9px;background:var(--blue-light);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
-.nrow-body{flex:1}.nrow-title{font-weight:700;font-size:12px;margin-bottom:2px}
-.nrow-text{font-size:12px;color:var(--text2)}.nrow-time{font-size:10px;color:var(--text3);margin-top:3px}
+.nrow-ico{width:32px;height:32px;border-radius:8px;background:var(--blue-light);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.nrow-body{flex:1;min-width:0}.nrow-title{font-weight:700;font-size:12px;margin-bottom:2px}
+.nrow-text{font-size:12px;color:var(--text2);word-break:break-word}.nrow-time{font-size:10px;color:var(--text3);margin-top:3px}
 .nrow.unread{background:var(--blue-soft);border-left:3px solid var(--blue)}
 
 /* LOGIN SCREEN */
 #screen-login{position:fixed;inset:0;background:linear-gradient(135deg,#0f1c2e 0%,#1a3a6e 100%);display:flex;align-items:center;justify-content:center;padding:20px;z-index:9000}
 #screen-login.hide{display:none}
-.login-card{background:var(--white);border-radius:24px;padding:36px 28px;width:100%;max-width:360px;box-shadow:var(--shadow-lg)}
-.login-brand{text-align:center;margin-bottom:28px}
-.login-ico{width:64px;height:64px;border-radius:20px;background:linear-gradient(135deg,#f59e0b,#d97706);display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 12px;box-shadow:0 8px 24px rgba(217,119,6,.3)}
-.login-brand h1{font-family:'Lora',serif;font-size:22px;color:var(--text)}
+.login-card{background:var(--white);border-radius:20px;padding:28px 22px;width:100%;max-width:360px;box-shadow:var(--shadow-lg)}
+.login-brand{text-align:center;margin-bottom:24px}
+.login-ico{width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,#f59e0b,#d97706);display:flex;align-items:center;justify-content:center;font-size:24px;margin:0 auto 10px;box-shadow:0 8px 24px rgba(217,119,6,.3)}
+.login-brand h1{font-family:'Lora',serif;font-size:20px;color:var(--text)}
 .login-brand p{font-size:12px;color:var(--text3);margin-top:3px}
-.lf{margin-bottom:13px}
+.lf{margin-bottom:12px}
 .lf label{display:block;font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.7px;margin-bottom:5px}
 .lf input{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:11px 13px;font-size:14px;color:var(--text);outline:none;transition:all .2s}
 .lf input:focus{border-color:var(--gold);background:var(--white);box-shadow:0 0 0 3px rgba(217,119,6,.1)}
@@ -119,28 +127,161 @@ button,input{font-family:inherit}
 .login-err{background:var(--red-light);border:1px solid #fca5a5;border-radius:8px;padding:9px 12px;font-size:12px;color:var(--red);font-weight:600;margin-bottom:12px;display:none}
 
 /* EMPTY */
-.empty{text-align:center;padding:36px 20px;color:var(--text3)}
-.empty .ei{font-size:40px;margin-bottom:9px}.empty p{font-size:13px}
+.empty{text-align:center;padding:32px 20px;color:var(--text3)}
+.empty .ei{font-size:36px;margin-bottom:8px}.empty p{font-size:12px}
 
 /* TOAST */
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(12px);background:var(--text);color:var(--white);padding:9px 18px;border-radius:var(--r-full);font-size:12px;font-weight:600;z-index:9998;opacity:0;transition:all .3s;pointer-events:none}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(12px);background:var(--text);color:var(--white);padding:9px 18px;border-radius:var(--r-full);font-size:12px;font-weight:600;z-index:9998;opacity:0;transition:all .3s;pointer-events:none;max-width:calc(100vw - 32px);text-align:center}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
 /* MODAL */
-.modal-ov{position:fixed;inset:0;background:rgba(15,28,46,.5);z-index:300;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(3px)}
+.modal-ov{position:fixed;inset:0;background:rgba(15,28,46,.5);z-index:300;display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(3px)}
+@media(min-width:480px){.modal-ov{align-items:center;padding:20px}}
 .modal-ov.open{display:flex}
-.modal-box{background:var(--white);border-radius:20px;padding:24px;width:100%;max-width:420px;box-shadow:var(--shadow-lg)}
-.modal-title{font-family:'Lora',serif;font-size:18px;font-weight:700;margin-bottom:6px}
-.modal-sub{font-size:13px;color:var(--text2);margin-bottom:20px;line-height:1.5}
+.modal-box{background:var(--white);border-radius:20px 20px 0 0;padding:20px;width:100%;max-width:480px;box-shadow:var(--shadow-lg)}
+@media(min-width:480px){.modal-box{border-radius:20px;max-width:420px}}
+.modal-title{font-family:'Lora',serif;font-size:17px;font-weight:700;margin-bottom:5px}
+.modal-sub{font-size:13px;color:var(--text2);margin-bottom:18px;line-height:1.5}
 .modal-actions{display:flex;gap:8px}
 .btn-confirm-del{flex:1;padding:12px;background:var(--red);color:var(--white);border:none;border-radius:var(--r-sm);font-size:14px;font-weight:700;cursor:pointer}
 .btn-cancel-m{flex:1;padding:12px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:14px;font-weight:600;cursor:pointer;color:var(--text2)}
-
-/* USER DETAIL MODAL */
-.udetail-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
+/* user detail rows */
+.udetail-row{display:flex;justify-content:space-between;align-items:flex-start;padding:7px 0;border-bottom:1px solid var(--border);gap:10px}
 .udetail-row:last-child{border-bottom:none}
-.udetail-row .lbl{color:var(--text3);font-weight:600;font-size:11px;text-transform:uppercase}
-.udetail-row .val{font-weight:600;color:var(--text);text-align:right;word-break:break-all}
+.udetail-row .lbl{font-size:11px;font-weight:700;color:var(--text3);flex-shrink:0}
+.udetail-row .val{font-size:12px;font-weight:600;text-align:right;word-break:break-all}
+
+/* IKLAN FORM */
+.ik-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:0}
+.ik-field{flex:1;min-width:140px;margin-bottom:11px}
+.ik-lbl{display:block;font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px}
+.ik-inp{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:9px 11px;font-size:13px;color:var(--text);outline:none;font-family:inherit;transition:border .2s}
+.ik-inp:focus{border-color:var(--blue);background:var(--white)}
+textarea.ik-inp{resize:vertical}
+.btn-ik-save{padding:10px 18px;background:linear-gradient(135deg,var(--blue),var(--blue-dark));color:var(--white);border:none;border-radius:var(--r-sm);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:opacity .2s}
+.btn-ik-save:hover{opacity:.9}
+.btn-ik-cancel{padding:10px 14px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:13px;font-weight:700;color:var(--text2);cursor:pointer;font-family:inherit}
+/* Upload zone */
+.ik-upload-zone{border:2px dashed var(--border);border-radius:var(--r);background:var(--surface);cursor:pointer;transition:all .2s;overflow:hidden;min-height:90px;display:flex;align-items:center;justify-content:center}
+.ik-upload-zone:hover{border-color:var(--blue);background:var(--blue-soft)}
+.ik-upload-idle{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:20px;text-align:center;pointer-events:none}
+.ik-upload-ico{font-size:28px;line-height:1}
+.ik-upload-txt{font-size:12px;font-weight:700;color:var(--text2)}
+.ik-upload-sub{font-size:10px;color:var(--text3)}
+.ik-upload-preview{position:relative;width:100%;display:flex;align-items:center;justify-content:center}
+.ik-upload-preview img{width:100%;max-height:180px;object-fit:cover;display:block;border-radius:calc(var(--r) - 2px)}
+.ik-preview-remove{position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,.6);color:#fff;border:none;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700;line-height:1;transition:background .2s}
+.ik-preview-remove:hover{background:var(--red)}
+.ik-compress-bar{height:4px;background:var(--border);border-radius:2px;margin-top:6px;overflow:hidden}
+.ik-compress-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--blue-dark));border-radius:2px;width:0%;transition:width .3s}
+.ik-compress-info{font-size:11px;color:var(--text3);margin-top:4px;font-weight:600}
+/* Iklan list row */
+.ikrow{display:flex;align-items:center;gap:9px;padding:10px 13px;border-bottom:1px solid #f0f5ff}
+.ikrow:last-child{border-bottom:none}.ikrow:active{background:var(--blue-soft)}
+.ikrow-banner{width:48px;height:48px;border-radius:8px;background:var(--blue-soft);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;overflow:hidden}
+.ikrow-banner img{width:100%;height:100%;object-fit:cover}
+.ikrow-info{flex:1;min-width:0}
+.ikrow-title{font-weight:700;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ikrow-meta{font-size:10px;color:var(--text3);margin-top:1px}
+.ikrow-badges{display:flex;gap:4px;margin-top:3px;flex-wrap:wrap}
+.ik-tbadge{padding:2px 7px;border-radius:var(--r-full);font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.3px}
+.ik-tbadge-event{background:#fef3c7;color:#d97706}
+.ik-tbadge-promo{background:var(--green-light);color:var(--green)}
+.ik-tbadge-info{background:var(--blue-light);color:var(--blue)}
+.ik-tbadge-lomba{background:var(--red-light);color:var(--red)}
+.ik-status-on{background:var(--green-light);color:var(--green);padding:2px 8px;border-radius:var(--r-full);font-size:9px;font-weight:800}
+.ik-status-off{background:var(--surface);color:var(--text3);padding:2px 8px;border-radius:var(--r-full);font-size:9px;font-weight:800}
+/* BADGE STYLES */
+.badge-star{background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;padding:2px 7px;border-radius:var(--r-full);font-size:9px;font-weight:800}
+.badge-verified{background:linear-gradient(135deg,#1a6bcc,#1254a8);color:#fff;padding:2px 7px;border-radius:var(--r-full);font-size:9px;font-weight:800}
+.b-star{background:#fef3c7;color:#d97706}.b-star:hover,.b-star:active{background:#f59e0b;color:#fff}
+.b-verified{background:var(--blue-light);color:var(--blue)}.b-verified:hover,.b-verified:active{background:var(--blue);color:#fff}
+.b-rmbadge{background:var(--surface);color:var(--text3)}.b-rmbadge:hover,.b-rmbadge:active{background:var(--red);color:#fff}
+
+/* ── MOBILE RESPONSIVE FIXES ── */
+
+/* Topbar: sembunyikan teks panjang di layar kecil */
+.btn-txt-short { display: none; }
+@media (max-width: 400px) {
+  .btn-txt-full { display: none; }
+  .btn-txt-short { display: inline; }
+  .btn-refresh { padding: 5px 8px; font-size: 14px; }
+  .tb-name { font-size: 13px; }
+  .tb-sub { font-size: 8px; }
+}
+
+/* Content padding lebih kecil di HP */
+@media (max-width: 480px) {
+  .content { padding: 10px 10px 80px; }
+  .admin-hdr { padding: 13px; border-radius: var(--r); }
+  .admin-hdr h2 { font-size: 15px; }
+}
+
+/* Stats grid — 2 kolom di semua ukuran layar */
+.astats { grid-template-columns: 1fr 1fr; }
+
+/* Nav tabs — scrollable horizontal, jangan wrap */
+.nav-tabs { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.ntab { flex-shrink: 0; }
+
+/* Search bar */
+@media (max-width: 360px) {
+  .sb input { font-size: 12px; padding: 8px 9px; }
+  .sb button { padding: 8px 10px; }
+}
+
+/* User row — layout stacked sudah benar, tapi actions wrap perlu lebih rapi */
+.urow-actions { display: flex; flex-wrap: wrap; gap: 5px; }
+.urow-actions .bsm { flex: 1; min-width: 70px; text-align: center; }
+
+/* Post row — harus flex-wrap agar tombol tidak terpotong */
+.prow { flex-wrap: wrap; gap: 7px; }
+.prow .btns { margin-left: auto; flex-shrink: 0; }
+
+/* Notif row — word break untuk teks panjang */
+.nrow-text { word-break: break-word; overflow-wrap: anywhere; }
+
+/* Iklan form — semua field full width di mobile */
+@media (max-width: 480px) {
+  .ik-row { flex-direction: column; gap: 0; }
+  .ik-field { min-width: unset !important; max-width: unset !important; flex: unset; width: 100%; }
+  .ik-row > div[style*="max-width"] { max-width: unset !important; width: 100%; }
+  /* Tombol simpan/batal iklan */
+  .ik-row:last-child, .ik-row > div[style*="margin-top"] {
+    width: 100%;
+    margin-top: 0 !important;
+  }
+  .btn-ik-save, .btn-ik-cancel { width: 100%; padding: 12px; font-size: 13px; }
+  /* Iklan row btns */
+  .ikrow { flex-wrap: wrap; }
+  .ikrow .btns { width: 100%; justify-content: flex-end; margin-top: 4px; }
+}
+
+/* Modal — pastikan tidak overflow di HP kecil */
+.modal-box { padding: 18px 16px 24px; max-height: 90vh; overflow-y: auto; }
+@media (max-width: 360px) {
+  .modal-box { padding: 15px 13px 20px; }
+  .modal-title { font-size: 15px; }
+}
+
+/* Storage breakdown wrapping */
+#storage-breakdown { flex-wrap: wrap; gap: 6px; }
+
+/* Login card */
+@media (max-width: 360px) {
+  .login-card { padding: 22px 16px; }
+}
+
+/* Card header — badge wrap */
+.card-hdr { flex-wrap: wrap; gap: 4px; }
+
+/* User detail modal value wrap */
+.udetail-row .val { word-break: break-all; max-width: 60%; font-size: 11px; }
+
+/* Topbar kanan tidak overflow */
+.tb-right { gap: 5px; flex-shrink: 0; }
+.topbar { padding: 0 10px; gap: 8px; }
+
 </style>
 </head>
 <body>
@@ -153,8 +294,8 @@ button,input{font-family:inherit}
   </div>
   <div class="tb-right">
     <span id="last-refresh" style="color:rgba(255,255,255,.5);font-size:10px"></span>
-    <button class="btn-refresh" onclick="loadDashboard()">🔄 Refresh</button>
-    <button class="btn-refresh" onclick="auth.signOut()" style="background:rgba(220,38,38,.3);border-color:rgba(220,38,38,.4)">🚪 Keluar</button>
+    <button class="btn-refresh" onclick="loadDashboard()" title="Refresh"><span class="btn-txt-full">🔄 Refresh</span><span class="btn-txt-short">🔄</span></button>
+    <button class="btn-refresh" onclick="doLogout()" style="background:rgba(220,38,38,.3);border-color:rgba(220,38,38,.4)" title="Keluar"><span class="btn-txt-full">🚪 Keluar</span><span class="btn-txt-short">🚪</span></button>
   </div>
 </div>
 
@@ -212,6 +353,7 @@ button,input{font-family:inherit}
     <div class="ntab active" id="ntab-users" onclick="showTab('users',this)">👥 Pengguna</div>
     <div class="ntab" id="ntab-posts" onclick="showTab('posts',this)">📋 Postingan</div>
     <div class="ntab" id="ntab-notifs" onclick="showTab('notifs',this)">🔔 Notifikasi</div>
+    <div class="ntab" id="ntab-iklan" onclick="showTab('iklan',this)">📢 Iklan/Event</div>
   </div>
 
   <!-- USERS TAB -->
@@ -251,7 +393,102 @@ button,input{font-family:inherit}
       <div id="notif-list-admin"></div>
     </div>
   </div>
-</div>
+
+  <!-- IKLAN TAB -->
+  <div id="tab-iklan" style="display:none">
+    <!-- Form tambah/edit -->
+    <div class="card" style="margin-bottom:12px">
+      <div class="card-hdr">
+        ➕ <span id="iklan-form-title">Tambah Iklan / Event</span>
+        <span id="iklan-form-edit-badge" style="display:none;background:var(--gold-light);color:var(--gold);font-weight:800;font-size:10px;padding:2px 8px;border-radius:var(--r-full)">Edit Mode</span>
+      </div>
+      <div style="padding:14px">
+        <input type="hidden" id="ik-edit-id">
+        <div class="ik-row">
+          <div class="ik-field">
+            <label class="ik-lbl">Judul *</label>
+            <input type="text" id="ik-judul" placeholder="cth: Lomba Cupang Batam Cup 2025" class="ik-inp">
+          </div>
+          <div class="ik-field" style="max-width:140px">
+            <label class="ik-lbl">Tipe *</label>
+            <select id="ik-tipe" class="ik-inp">
+              <option value="event">🗓️ Event</option>
+              <option value="promo">🎁 Promo</option>
+              <option value="info">ℹ️ Info</option>
+              <option value="lomba">🏆 Lomba</option>
+            </select>
+          </div>
+        </div>
+        <div class="ik-field">
+          <label class="ik-lbl">Deskripsi</label>
+          <textarea id="ik-deskripsi" class="ik-inp" style="min-height:72px;resize:vertical" placeholder="Deskripsi singkat…"></textarea>
+        </div>
+        <div class="ik-row">
+          <div class="ik-field">
+            <label class="ik-lbl">Tanggal / Waktu</label>
+            <input type="text" id="ik-tanggal" class="ik-inp" placeholder="cth: 25 Juli 2025, 08.00 WIB">
+          </div>
+          <div class="ik-field">
+            <label class="ik-lbl">Lokasi</label>
+            <input type="text" id="ik-lokasi" class="ik-inp" placeholder="cth: Mega Mall Batam">
+          </div>
+        </div>
+        <div class="ik-row">
+          <div class="ik-field">
+            <label class="ik-lbl">Emoji/Icon Banner</label>
+            <input type="text" id="ik-emoji" class="ik-inp" maxlength="4" placeholder="🐟" value="🐟" style="font-size:20px">
+          </div>
+          <div class="ik-field">
+            <label class="ik-lbl">Teks Tombol CTA</label>
+            <input type="text" id="ik-cta" class="ik-inp" placeholder="cth: Daftar Sekarang">
+          </div>
+        </div>
+        <div class="ik-field">
+          <label class="ik-lbl">Gambar Banner (opsional)</label>
+          <div class="ik-upload-zone" id="ik-upload-zone" onclick="document.getElementById('ik-file-input').click()">
+            <input type="file" id="ik-file-input" accept="image/*" style="display:none" onchange="ikHandleFile(event)">
+            <div class="ik-upload-idle" id="ik-upload-idle">
+              <div class="ik-upload-ico">🖼️</div>
+              <div class="ik-upload-txt">Klik untuk upload gambar</div>
+              <div class="ik-upload-sub">JPG / PNG / WEBP — maks 2 MB</div>
+            </div>
+            <div class="ik-upload-preview" id="ik-upload-preview" style="display:none">
+              <img id="ik-preview-img" src="" alt="preview">
+              <button class="ik-preview-remove" onclick="ikRemoveImage(event)" title="Hapus gambar">✕</button>
+            </div>
+          </div>
+          <div class="ik-compress-bar" id="ik-compress-bar" style="display:none">
+            <div class="ik-compress-fill" id="ik-compress-fill"></div>
+          </div>
+          <div class="ik-compress-info" id="ik-compress-info" style="display:none"></div>
+          <input type="hidden" id="ik-img">
+        </div>
+        <div class="ik-field">
+          <label class="ik-lbl">Link / URL Tujuan (opsional)</label>
+          <input type="url" id="ik-link" class="ik-inp" placeholder="https://wa.me/62...">
+        </div>
+        <div class="ik-field">
+            <label class="ik-lbl">Status Tampil</label>
+            <select id="ik-aktif" class="ik-inp">
+              <option value="true">✅ Aktif (tampil)</option>
+              <option value="false">🚫 Nonaktif (sembunyikan)</option>
+            </select>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
+            <button class="btn-ik-save" id="btn-ik-save" onclick="iklanSave()" style="flex:1;min-width:120px">💾 Simpan Iklan</button>
+            <button class="btn-ik-cancel" id="btn-ik-cancel" onclick="iklanCancelEdit()" style="display:none;flex:1;min-width:80px">✕ Batal</button>
+          </div>
+      </div>
+    </div>
+
+    <!-- Daftar iklan -->
+    <div class="card">
+      <div class="card-hdr">📢 Daftar Iklan/Event <span id="iklan-count"></span></div>
+      <div id="iklan-list"></div>
+    </div>
+  </div>
+
+</div><!-- end .content -->
 
 <!-- CONFIRM DELETE MODAL -->
 <div class="modal-ov" id="modal-confirm">
@@ -303,7 +540,7 @@ button,input{font-family:inherit}
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-import { getFirestore, collection, doc, getDocs, updateDoc, deleteDoc, query, orderBy } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getFirestore, collection, doc, getDocs, getDoc, addDoc, updateDoc, deleteDoc, query, orderBy, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyCrOsXVHxGb2J1G5XA1aIy160HXupQjXK4",
@@ -474,26 +711,36 @@ window.renderUsers = function() {
     return;
   }
 
-  c.innerHTML = filtered.map(u => `
+  c.innerHTML = filtered.map(u => {
+    const badgeHtml = u.badge==='star'
+      ? '<span class="badge-star">⭐ Star</span>'
+      : u.badge==='verified'
+      ? '<span class="badge-verified">✓ Verified</span>'
+      : '';
+    const badgeBtns = u.badge
+      ? `<button class="bsm b-rmbadge" onclick="adminRemoveBadge('${u.id}')">✕ Cabut Badge</button>`
+      : `<button class="bsm b-star" onclick="adminSetBadge('${u.id}','star')">⭐ Star</button><button class="bsm b-verified" onclick="adminSetBadge('${u.id}','verified')">✓ Verified</button>`;
+    return `
     <div class="urow">
-      <div class="urow-l">
-        <div class="urow-av" style="background:${u.blocked?'var(--red)':'var(--blue)'}">${(u.avatar||u.name?.[0]||'U').toUpperCase()}</div>
-        <div style="min-width:0">
-          <div class="urow-name">${u.name || '(tanpa nama)'}</div>
+      <div class="urow-top">
+        <div class="urow-av" style="background:${u.blocked?'var(--red)':u.badge==='star'?'#d97706':u.badge==='verified'?'var(--blue)':'var(--blue)'}">${(u.avatar||u.name?.[0]||'U').toUpperCase()}</div>
+        <div class="urow-info">
+          <div class="urow-name">${u.name || '(tanpa nama)'} ${badgeHtml}</div>
           <div class="urow-ph">${u.email || u.phone || '-'}</div>
         </div>
-      </div>
-      <div class="urow-r">
-        <span class="sbadge ${u.blocked?'sb-blocked':'sb-active'}">${u.blocked?'Blokir':'Aktif'}</span>
-        <div class="btns">
-          <button class="bsm b-info" onclick="showUserDetail('${u.id}')">Detail</button>
-          ${u.blocked
-            ? `<button class="bsm b-unblock" onclick="adminUnblock('${u.id}')">Buka</button>`
-            : `<button class="bsm b-block" onclick="adminBlock('${u.id}')">Blokir</button>`}
-          <button class="bsm b-del" onclick="confirmDel('user','${u.id}','${(u.name||'user').replace(/'/g,"\\'")}')">🗑</button>
+        <div class="urow-status">
+          <span class="sbadge ${u.blocked?'sb-blocked':'sb-active'}">${u.blocked?'Blokir':'Aktif'}</span>
         </div>
       </div>
-    </div>`).join('');
+      <div class="urow-actions">
+        <button class="bsm b-info" onclick="showUserDetail('${u.id}')">👁 Detail</button>
+        ${u.blocked
+          ? `<button class="bsm b-unblock" onclick="adminUnblock('${u.id}')">✅ Buka</button>`
+          : `<button class="bsm b-block" onclick="adminBlock('${u.id}')">🚫 Blokir</button>`}
+        ${badgeBtns}
+        <button class="bsm b-del" onclick="confirmDel('user','${u.id}','${(u.name||'user').replace(/'/g,"\\'")}')">🗑 Hapus</button>
+      </div>
+    </div>`}).join('');
 };
 
 // ── USER DETAIL ──
@@ -512,6 +759,7 @@ window.showUserDetail = function(id) {
     <div class="udetail-row"><span class="lbl">Bergabung</span><span class="val">${joined}</span></div>
     <div class="udetail-row"><span class="lbl">Total Postingan</span><span class="val">${posts.length} postingan</span></div>
     <div class="udetail-row"><span class="lbl">Status</span><span class="val" style="color:${u.blocked?'var(--red)':'var(--green)'}">${u.blocked?'🔴 Diblokir':'🟢 Aktif'}</span></div>
+    <div class="udetail-row"><span class="lbl">Badge</span><span class="val">${u.badge==='star'?'<span class="badge-star">⭐ Star</span>':u.badge==='verified'?'<span class="badge-verified">✓ Verified</span>':'<span style="color:var(--text3);font-size:12px">Tidak ada</span>'}</span></div>
     <div class="udetail-row"><span class="lbl">User ID</span><span class="val" style="font-size:10px;color:var(--text3)">${u.id}</span></div>`;
   const blockBtn = document.getElementById('btn-detail-block');
   if (u.blocked) {
@@ -582,13 +830,14 @@ function renderNotifsAdmin() {
 
 // ── TAB & FILTER ──
 window.showTab = function(tab, el) {
-  ['users','posts','notifs'].forEach(t => {
+  ['users','posts','notifs','iklan'].forEach(t => {
     document.getElementById('tab-'+t).style.display = t===tab ? '' : 'none';
   });
   document.querySelectorAll('.nav-tabs .ntab').forEach(n => n.classList.remove('active'));
   if (el) el.classList.add('active');
   if (tab === 'posts') renderPosts();
   if (tab === 'notifs') renderNotifsAdmin();
+  if (tab === 'iklan') loadIklanList();
 };
 
 window.filterPostType = function(t, el) {
@@ -624,6 +873,31 @@ window.adminUnblock = async function(id) {
     document.querySelector('.asc.red .n').textContent = blocked;
     showToast('Blokir dibuka ✅');
   } catch(e) { showToast('Gagal: ' + (e.code||e.message)); console.error(e); }
+  });
+};
+
+// ── BADGE ──
+window.adminSetBadge = async function(id, badge) {
+  requireAuth(async () => {
+    try {
+      await updateDoc(doc(db,'profiles',id), {badge});
+      const u = allUsers.find(u => u.id === id);
+      if (u) u.badge = badge;
+      renderUsers();
+      showToast(badge==='star' ? '⭐ Badge Star diberikan!' : '✓ Badge Verified diberikan!');
+    } catch(e) { showToast('Gagal: ' + (e.code||e.message)); console.error(e); }
+  });
+};
+
+window.adminRemoveBadge = async function(id) {
+  requireAuth(async () => {
+    try {
+      await updateDoc(doc(db,'profiles',id), {badge: null});
+      const u = allUsers.find(u => u.id === id);
+      if (u) u.badge = null;
+      renderUsers();
+      showToast('Badge berhasil dicabut');
+    } catch(e) { showToast('Gagal: ' + (e.code||e.message)); console.error(e); }
   });
 };
 
@@ -754,6 +1028,258 @@ function requireAuth(fn) {
   document.getElementById('login-err').style.display = 'none';
   openModal('modal-login');
 }
+
+// ── IKLAN / EVENT MANAGEMENT ──
+
+let allIklan = [];
+
+async function loadIklanList() {
+  const c = document.getElementById('iklan-list');
+  c.innerHTML = '<div class="empty"><div class="ei" style="font-size:24px">⏳</div><p>Memuat…</p></div>';
+  try {
+    const snap = await getDocs(query(collection(db,'iklan'), orderBy('createdAt','desc')));
+    allIklan = snap.docs.map(d=>({id:d.id,...d.data()}));
+    renderIklanList();
+  } catch(e) { c.innerHTML='<div class="empty"><p>Gagal memuat: '+e.message+'</p></div>'; }
+}
+
+function renderIklanList() {
+  const c = document.getElementById('iklan-list');
+  document.getElementById('iklan-count').textContent = allIklan.length + ' item';
+  if (!allIklan.length) {
+    c.innerHTML = '<div class="empty"><div class="ei">📢</div><p>Belum ada iklan. Tambahkan di atas!</p></div>';
+    return;
+  }
+  const tipeClass = {event:'ik-tbadge-event',promo:'ik-tbadge-promo',info:'ik-tbadge-info',lomba:'ik-tbadge-lomba'};
+  const tipeLbl   = {event:'Event',promo:'Promo',info:'Info',lomba:'Lomba'};
+  c.innerHTML = allIklan.map(item => {
+    const banner = item.imageUrl
+      ? `<img src="${item.imageUrl}" alt="" onerror="this.parentElement.innerHTML='${item.emoji||'🐟'}';">`
+      : (item.emoji||'🐟');
+    const aktif = item.aktif !== false;
+    return `<div class="ikrow">
+      <div class="ikrow-banner">${banner}</div>
+      <div class="ikrow-info">
+        <div class="ikrow-title">${item.judul||'(tanpa judul)'}</div>
+        <div class="ikrow-meta">${[item.tanggal,item.lokasi].filter(Boolean).join(' • ')||'&nbsp;'}</div>
+        <div class="ikrow-badges">
+          <span class="ik-tbadge ${tipeClass[item.tipe]||'ik-tbadge-info'}">${tipeLbl[item.tipe]||item.tipe||'Info'}</span>
+          <span class="${aktif?'ik-status-on':'ik-status-off'}">${aktif?'✅ Aktif':'🚫 Nonaktif'}</span>
+        </div>
+      </div>
+      <div class="btns" style="flex-shrink:0">
+        <button class="bsm b-info" onclick="iklanEdit('${item.id}')">✏️</button>
+        <button class="bsm ${aktif?'b-block':'b-unblock'}" onclick="iklanToggle('${item.id}',${aktif})">${aktif?'Hide':'Show'}</button>
+        <button class="bsm b-del" onclick="iklanConfirmDel('${item.id}','${(item.judul||'').replace(/'/g,"\\'")}')">🗑</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── IKLAN IMAGE UPLOAD ──
+let _ikImageBase64 = null; // menyimpan base64 gambar yang dipilih
+
+window.ikHandleFile = async function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  if (!file.type.startsWith('image/')) { showToast('File harus berupa gambar'); return; }
+  if (file.size > 2 * 1024 * 1024) { showToast('Gambar terlalu besar, maks 2 MB'); e.target.value=''; return; }
+
+  // Tampilkan progress
+  const bar = document.getElementById('ik-compress-bar');
+  const fill = document.getElementById('ik-compress-fill');
+  const info = document.getElementById('ik-compress-info');
+  bar.style.display = ''; fill.style.width = '20%'; info.style.display = '';
+  info.textContent = 'Mengompres gambar…';
+
+  try {
+    const base64 = await _compressImage(file, 900, 0.82, (p) => {
+      fill.style.width = (20 + p * 70) + '%';
+    });
+    fill.style.width = '100%';
+    const kb = Math.round(base64.length * 0.75 / 1024);
+    info.textContent = `✅ Siap disimpan — ukuran: ${kb} KB`;
+
+    _ikImageBase64 = base64;
+    document.getElementById('ik-img').value = base64;
+
+    // Tampilkan preview
+    document.getElementById('ik-preview-img').src = base64;
+    document.getElementById('ik-upload-idle').style.display = 'none';
+    document.getElementById('ik-upload-preview').style.display = '';
+
+    setTimeout(() => { bar.style.display = 'none'; }, 1200);
+  } catch(err) {
+    info.textContent = '❌ Gagal memproses gambar';
+    console.error(err);
+  }
+  e.target.value = ''; // reset input supaya bisa upload ulang file sama
+};
+
+window.ikRemoveImage = function(e) {
+  e.stopPropagation(); // jangan trigger upload zone click
+  _ikImageBase64 = null;
+  document.getElementById('ik-img').value = '';
+  document.getElementById('ik-preview-img').src = '';
+  document.getElementById('ik-upload-idle').style.display = '';
+  document.getElementById('ik-upload-preview').style.display = 'none';
+  document.getElementById('ik-compress-bar').style.display = 'none';
+  document.getElementById('ik-compress-info').style.display = 'none';
+};
+
+function _compressImage(file, maxW, quality, onProgress) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = reject;
+    reader.onload = (ev) => {
+      if (onProgress) onProgress(0.1);
+      const img = new Image();
+      img.onerror = reject;
+      img.onload = () => {
+        if (onProgress) onProgress(0.4);
+        const canvas = document.createElement('canvas');
+        let w = img.width, h = img.height;
+        if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        if (onProgress) onProgress(0.85);
+        const result = canvas.toDataURL('image/jpeg', quality);
+        if (onProgress) onProgress(1);
+        resolve(result);
+      };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function _ikSetPreview(url) {
+  if (!url) return;
+  document.getElementById('ik-preview-img').src = url;
+  document.getElementById('ik-upload-idle').style.display = 'none';
+  document.getElementById('ik-upload-preview').style.display = '';
+}
+
+function _ikClearPreview() {
+  _ikImageBase64 = null;
+  document.getElementById('ik-img').value = '';
+  document.getElementById('ik-preview-img').src = '';
+  document.getElementById('ik-upload-idle').style.display = '';
+  document.getElementById('ik-upload-preview').style.display = 'none';
+  document.getElementById('ik-compress-bar').style.display = 'none';
+  document.getElementById('ik-compress-info').style.display = 'none';
+}
+
+window.iklanSave = async function() {
+  requireAuth(async () => {
+    const id    = document.getElementById('ik-edit-id').value;
+    const judul = document.getElementById('ik-judul').value.trim();
+    const tipe  = document.getElementById('ik-tipe').value;
+    if (!judul) { showToast('Judul wajib diisi'); return; }
+    const data = {
+      judul,
+      tipe,
+      deskripsi : document.getElementById('ik-deskripsi').value.trim(),
+      tanggal   : document.getElementById('ik-tanggal').value.trim(),
+      lokasi    : document.getElementById('ik-lokasi').value.trim(),
+      emoji     : document.getElementById('ik-emoji').value.trim() || '🐟',
+      ctaTeks   : document.getElementById('ik-cta').value.trim(),
+      imageUrl  : document.getElementById('ik-img').value.trim() || null,
+      linkUrl   : document.getElementById('ik-link').value.trim() || null,
+      aktif     : document.getElementById('ik-aktif').value === 'true',
+    };
+    showLoading(id ? 'Menyimpan perubahan…' : 'Menyimpan iklan…');
+    try {
+      if (id) {
+        await updateDoc(doc(db,'iklan',id), {...data, updatedAt: serverTimestamp()});
+        showToast('✅ Iklan diperbarui!');
+      } else {
+        await addDoc(collection(db,'iklan'), {...data, createdAt: serverTimestamp()});
+        showToast('✅ Iklan berhasil disimpan!');
+      }
+      iklanCancelEdit();
+      await loadIklanList();
+    } catch(e) { showToast('Gagal: '+e.message); console.error(e); }
+    finally { hideLoading(); }
+  });
+};
+
+window.iklanEdit = function(id) {
+  const item = allIklan.find(i=>i.id===id);
+  if (!item) return;
+  document.getElementById('ik-edit-id').value          = id;
+  document.getElementById('ik-judul').value            = item.judul||'';
+  document.getElementById('ik-tipe').value             = item.tipe||'event';
+  document.getElementById('ik-deskripsi').value        = item.deskripsi||'';
+  document.getElementById('ik-tanggal').value          = item.tanggal||'';
+  document.getElementById('ik-lokasi').value           = item.lokasi||'';
+  document.getElementById('ik-emoji').value            = item.emoji||'🐟';
+  document.getElementById('ik-cta').value              = item.ctaTeks||'';
+  document.getElementById('ik-img').value              = item.imageUrl||'';
+  document.getElementById('ik-link').value             = item.linkUrl||'';
+  // Tampilkan preview gambar jika ada
+  if (item.imageUrl) { _ikSetPreview(item.imageUrl); _ikImageBase64 = item.imageUrl; }
+  else { _ikClearPreview(); }
+  document.getElementById('ik-aktif').value            = String(item.aktif!==false);
+  document.getElementById('iklan-form-title').textContent = 'Edit Iklan';
+  document.getElementById('iklan-form-edit-badge').style.display = '';
+  document.getElementById('btn-ik-cancel').style.display = '';
+  document.getElementById('btn-ik-save').textContent = '💾 Simpan Perubahan';
+  // scroll to form
+  document.getElementById('tab-iklan').scrollIntoView({behavior:'smooth', block:'start'});
+};
+
+window.iklanCancelEdit = function() {
+  document.getElementById('ik-edit-id').value = '';
+  ['ik-judul','ik-deskripsi','ik-tanggal','ik-lokasi','ik-cta','ik-img','ik-link'].forEach(id=>{
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('ik-emoji').value = '🐟';
+  document.getElementById('ik-tipe').value  = 'event';
+  document.getElementById('ik-aktif').value = 'true';
+  _ikClearPreview();
+  document.getElementById('iklan-form-title').textContent = 'Tambah Iklan / Event';
+  document.getElementById('iklan-form-edit-badge').style.display = 'none';
+  document.getElementById('btn-ik-cancel').style.display = 'none';
+  document.getElementById('btn-ik-save').textContent = '💾 Simpan Iklan';
+};
+
+window.iklanToggle = async function(id, currentAktif) {
+  requireAuth(async () => {
+    try {
+      await updateDoc(doc(db,'iklan',id), {aktif: !currentAktif});
+      const item = allIklan.find(i=>i.id===id);
+      if (item) item.aktif = !currentAktif;
+      renderIklanList();
+      showToast(currentAktif ? '🚫 Iklan disembunyikan' : '✅ Iklan ditampilkan');
+    } catch(e) { showToast('Gagal: '+e.message); }
+  });
+};
+
+window.iklanConfirmDel = function(id, name) {
+  pendingDel = {type:'iklan', id};
+  document.getElementById('modal-confirm-title').textContent = 'Hapus iklan ini?';
+  document.getElementById('modal-confirm-sub').textContent = `"${name}" akan dihapus permanen.`;
+  document.getElementById('btn-confirm-del').onclick = async () => {
+    closeModal('modal-confirm');
+    showLoading('Menghapus…');
+    try {
+      await deleteDoc(doc(db,'iklan',id));
+      allIklan = allIklan.filter(i=>i.id!==id);
+      renderIklanList();
+      showToast('Iklan dihapus');
+    } catch(e) { showToast('Gagal: '+e.message); }
+    finally { hideLoading(); }
+  };
+  openModal('modal-confirm');
+};
+
+window.doLogout = async function() {
+  try {
+    await auth.signOut();
+  } catch(e) { console.error('Logout error:', e); }
+};
 
 // ── INIT ──
 // loadDashboard dipanggil otomatis setelah login berhasil via onAuthStateChanged
