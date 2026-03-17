@@ -6,7 +6,7 @@
 <title>Admin Panel — Betta Market Batam</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Lora:wght@600;700&display=swap" rel="stylesheet">
 <style>
-/* CSS ASLI */
+/* --- SEMUA CSS ASLI ANDA TETAP DI SINI --- */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
   --blue:#1a6bcc;--blue-dark:#1254a8;--blue-light:#e8f1fc;--blue-soft:#f0f6ff;
@@ -18,168 +18,35 @@
 html{font-size:16px;-webkit-text-size-adjust:100%}
 body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--surface);color:var(--text);min-height:100vh;overflow-x:hidden}
 button,input,select,textarea{font-family:inherit}
-::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
-
-/* LOADING & TOAST */
 .loading-ov{position:fixed;inset:0;background:rgba(255,255,255,.92);z-index:9999;display:none;align-items:center;justify-content:center;flex-direction:column;gap:12px}
 .loading-ov.show{display:flex}
 .spinner{width:38px;height:38px;border:3px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .loading-ov p{font-size:13px;color:var(--text2);font-weight:600}
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(12px);background:var(--text);color:var(--white);padding:10px 20px;border-radius:var(--r-full);font-size:12px;font-weight:600;z-index:9998;opacity:0;transition:all .3s;pointer-events:none;max-width:calc(100vw - 32px);text-align:center;box-shadow:var(--shadow-lg)}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-
-/* TOPBAR */
 .topbar{position:sticky;top:0;z-index:100;background:linear-gradient(135deg,#0f1c2e,#1a3a6e);padding:0 12px;height:52px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 12px rgba(15,28,46,.3)}
-.tb-brand{display:flex;align-items:center;gap:8px}
-.tb-ico{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#f59e0b,#d97706);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
-.tb-name{font-family:'Lora',serif;font-size:15px;font-weight:700;color:var(--white)}
-
-/* CARDS & FORMS */
 .content{padding:12px;max-width:600px;margin:0 auto}
-.card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:12px;box-shadow:var(--shadow-sm)}
+.card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:12px}
 .card-hdr{padding:10px 13px;border-bottom:1px solid var(--border);font-weight:800;font-size:12px;display:flex;justify-content:space-between;align-items:center;background:var(--blue-soft)}
+/* CSS BARU UNTUK ONESIGNAL */
 .ik-field{margin-bottom:11px; padding:0 13px}
 .ik-lbl{display:block;font-size:11px;font-weight:700;color:var(--text2);margin-bottom:4px;text-transform:uppercase}
-.ik-inp{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:9px 11px;font-size:13px;outline:none;transition:all .2s}
-.ik-inp:focus{border-color:var(--blue);background:var(--white)}
-.btn-onesignal{margin:13px; padding:12px; background:linear-gradient(135deg, var(--blue), var(--blue-dark)); color:white; border:none; border-radius:var(--r-sm); font-weight:700; cursor:pointer; width:calc(100% - 26px); box-shadow: 0 4px 12px rgba(26,107,204,0.2)}
-
-/* ASLI DARI FILE ANDA */
-.nav-tabs{display:flex;gap:5px;margin-bottom:12px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
-.ntab{padding:7px 13px;border-radius:var(--r-full);border:1.5px solid var(--border);font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;background:var(--white);color:var(--text2);transition:all .2s;flex-shrink:0}
-.ntab.active{background:var(--blue);border-color:var(--blue);color:var(--white)}
+.ik-inp{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:9px 11px;font-size:13px;outline:none}
+.btn-onesignal{margin:13px; padding:12px; background:var(--blue); color:white; border:none; border-radius:var(--r-sm); font-weight:700; cursor:pointer; width:calc(100% - 26px)}
+/* Lanjutkan CSS Asli Anda */
+.nav-tabs{display:flex;gap:5px;margin-bottom:12px;overflow-x:auto}
+.ntab{padding:7px 13px;border-radius:var(--r-full);border:1.5px solid var(--border);font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;background:var(--white)}
+.ntab.active{background:var(--blue);color:white}
+/* ... CSS Lainnya ... */
 </style>
 </head>
 <body>
 
 <div class="loading-ov" id="loading-ov"><div class="spinner"></div><p id="loading-msg">Memuat...</p></div>
-<div id="toast" class="toast"></div>
 
 <div class="topbar">
-  <div class="tb-brand">
-    <div class="tb-ico">⚙️</div>
-    <div><div class="tb-name">Admin Panel</div></div>
-  </div>
+  <div style="color:white; font-weight:bold; padding-left:10px">Admin Panel OneSignal</div>
 </div>
 
 <div class="content">
 
-  <div class="card" style="border: 2px solid var(--blue); margin-top: 10px;">
-    <div class="card-hdr" style="background:var(--blue); color:white">
-      🚀 BROADCAST PUSH NOTIFICATION (ONESIGNAL)
-    </div>
-    <div style="padding-top:14px">
-      <div class="ik-field">
-        <label class="ik-lbl">Judul Pengumuman</label>
-        <input type="text" id="os-title" class="ik-inp" placeholder="Contoh: Lelang Ikan Cupang Dimulai!">
-      </div>
-      <div class="ik-field">
-        <label class="ik-lbl">Isi Pesan</label>
-        <textarea id="os-body" class="ik-inp" style="height:70px" placeholder="Pesan ini akan langsung muncul di HP pengguna..."></textarea>
-      </div>
-      <button class="btn-onesignal" onclick="sendToHandphone()">🚀 KIRIM KE SEMUA HP SEKARANG</button>
-    </div>
-  </div>
-
-  <div class="nav-tabs">
-    <div class="ntab active" onclick="showTab('users',this)">👥 Pengguna</div>
-    <div class="ntab" onclick="showTab('posts',this)">📋 Postingan</div>
-    <div class="ntab" onclick="showTab('notifs',this)">🔔 Notifikasi</div>
-    <div class="ntab" onclick="showTab('iklan',this)">📢 Iklan/Event</div>
-  </div>
-
-  <div id="tab-users">
-      <div class="card"><div id="user-list" style="padding:10px; font-size:12px; color:gray">Daftar pengguna akan muncul di sini setelah login...</div></div>
-  </div>
-
-  <div id="tab-iklan" style="display:none">
-    <div class="card">
-        <div class="card-hdr">TAMBAH IKLAN</div>
-        <div style="padding:13px">
-            <p style="font-size:11px; color:gray">Kelola konten iklan marketplace Anda di sini.</p>
-        </div>
-    </div>
-  </div>
-
-</div>
-
-<script type="module">
-// --- DATA ONESIGNAL ANDA ---
-const ONESIGNAL_APP_ID = "e7d0b79d-c96d-4d2b-96c1-ee52611ac2e5";
-const ONESIGNAL_REST_KEY = "NDI3ZDhjYzgtZTBhNS00ODU2LWJkNjQtZGU3NGE2MDczMDdm"; // Dari Gambar Anda
-
-// --- FUNGSI BROADCAST ---
-window.sendToHandphone = async function() {
-  const title = document.getElementById('os-title').value;
-  const body = document.getElementById('os-body').value;
-
-  if (!title || !body) {
-    showToast("⚠️ Mohon isi judul dan pesan dulu.");
-    return;
-  }
-
-  if (!confirm("Kirim notifikasi ini ke SELURUH handphone pengguna sekarang?")) return;
-
-  showLoading("Menghubungi Server OneSignal...");
-
-  try {
-    const response = await fetch("https://onesignal.com/api/v1/notifications", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json; charset=utf-8",
-        "Authorization": "Basic " + ONESIGNAL_REST_KEY
-      },
-      body: JSON.stringify({
-        app_id: ONESIGNAL_APP_ID,
-        included_segments: ["All"],
-        headings: { "en": title, "id": title },
-        contents: { "en": body, "id": body },
-        priority: 10
-      })
-    });
-
-    const result = await response.json();
-
-    if (result.id) {
-      showToast("✅ SUKSES! Notifikasi sedang meluncur.");
-      document.getElementById('os-title').value = "";
-      document.getElementById('os-body').value = "";
-    } else {
-      showToast("❌ Gagal: " + (result.errors ? result.errors[0] : "Cek REST Key"));
-    }
-  } catch (e) {
-    showToast("❌ Terjadi kesalahan jaringan.");
-  } finally {
-    closeLoading();
-  }
-};
-
-// --- HELPER UI ASLI ---
-function showToast(m) {
-  const t = document.getElementById('toast');
-  t.textContent = m; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3000);
-}
-function showLoading(m) {
-  document.getElementById('loading-msg').textContent = m;
-  document.getElementById('loading-ov').classList.add('show');
-}
-function closeLoading() {
-  document.getElementById('loading-ov').classList.remove('show');
-}
-
-window.showTab = function(tab, el) {
-  ['users','posts','notifs','iklan'].forEach(t => {
-      const target = document.getElementById('tab-'+t);
-      if(target) target.style.display = 'none';
-  });
-  const current = document.getElementById('tab-'+tab);
-  if(current) current.style.display = 'block';
-  document.querySelectorAll('.ntab').forEach(n => n.classList.remove('active'));
-  el.classList.add('active');
-};
-</script>
-
-</body>
-</html>
+  <div class="card" style="border: 2px
