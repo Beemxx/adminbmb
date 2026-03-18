@@ -1555,29 +1555,20 @@ function initHourChips() {
   }).join('');
 }
 
-// ── Kirim Push via OneSignal REST API ──
+// ── Kirim Push via PHP Proxy (hindari CORS) ──
 async function sendOnesignalPush({ title, message, url, type }) {
   const appId  = localStorage.getItem('os_app_id');
   const apiKey = localStorage.getItem('os_api_key');
   if (!appId || !apiKey) throw new Error('OneSignal App ID / API Key belum diisi di konfigurasi');
 
-  const cfg = BC_TYPE_CONFIG[type] || BC_TYPE_CONFIG.announcement;
-  const body = {
-    app_id           : appId,
-    included_segments: ['All'],          // Kirim ke semua subscriber
-    headings         : { en: title },
-    contents         : { en: message },
-    data             : { type, icon: cfg.icon },
-  };
-  if (url) body.url = url;
-
-  const resp = await fetch('https://onesignal.com/api/v1/notifications', {
+  const resp = await fetch('send-notif.php', {
     method : 'POST',
-    headers: { 'Content-Type': 'application/json', Authorization: `Key ${apiKey}` },
-    body   : JSON.stringify(body),
+    headers: { 'Content-Type': 'application/json' },
+    body   : JSON.stringify({ app_id: appId, api_key: apiKey, title, message, url, type }),
   });
   const result = await resp.json();
   if (result.errors) throw new Error(JSON.stringify(result.errors));
+  if (result.error)  throw new Error(result.error);
   return result; // { id, recipients }
 }
 
