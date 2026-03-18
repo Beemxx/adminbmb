@@ -295,7 +295,16 @@ textarea.ik-inp{resize:vertical}
 .bc-hist-title{font-weight:700;font-size:12px;margin-bottom:2px}
 .bc-hist-msg{font-size:11px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .bc-hist-meta{font-size:10px;color:var(--text3);margin-top:3px;display:flex;gap:8px;flex-wrap:wrap}
-.bc-hist-badge{padding:2px 7px;border-radius:var(--r-full);font-size:9px;font-weight:800;background:var(--blue-light);color:var(--blue)}
+.bc-hist-badge{padding:2px 7px;border-radius:var(--r-full);font-size:9px;font-weight:800;background:var(--blue-light);color:var(--blue);white-space:nowrap;flex-shrink:0}
+.bc-mode-btn{padding:7px 13px;border-radius:var(--r-full);border:1.5px solid var(--border);font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;background:var(--white);color:var(--text2);transition:all .2s;flex-shrink:0}
+.bc-mode-btn.active{background:var(--blue);border-color:var(--blue);color:var(--white)}
+.bc-day-chk{display:inline-flex;align-items:center;gap:4px;background:var(--surface);border:1.5px solid var(--border);border-radius:6px;padding:5px 9px;font-size:11px;font-weight:700;cursor:pointer;transition:all .2s}
+.bc-day-chk:has(input:checked){background:var(--blue-light);border-color:var(--blue);color:var(--blue)}
+.bc-day-chk input{display:none}
+.bc-hour-chip{padding:5px 10px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:var(--white);color:var(--text2);transition:all .2s}
+.bc-hour-chip.active{background:var(--blue);border-color:var(--blue);color:white}
+.bc-sched-row{display:flex;align-items:center;gap:10px;padding:10px 13px;border-bottom:1px solid #f0f5ff}
+.bc-sched-row:last-child{border-bottom:none}
 
 </style>
 </head>
@@ -507,31 +516,94 @@ textarea.ik-inp{resize:vertical}
   <!-- BROADCAST TAB -->
   <div id="tab-broadcast" style="display:none">
 
-    <!-- Form Kirim Pengumuman -->
+    <!-- Konfigurasi OneSignal -->
+    <div class="card" style="margin-bottom:12px" id="bc-config-card">
+      <div class="card-hdr">
+        ⚙️ Konfigurasi OneSignal
+        <span id="bc-config-status" style="font-size:10px;font-weight:800;padding:2px 8px;border-radius:var(--r-full);background:var(--gold-light);color:var(--gold)">Belum diisi</span>
+      </div>
+      <div style="padding:14px">
+        <div class="ik-row">
+          <div class="ik-field">
+            <label class="ik-lbl">OneSignal App ID *</label>
+            <input type="text" id="os-app-id" class="ik-inp" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" oninput="saveOsConfig()">
+          </div>
+        </div>
+        <div class="ik-row">
+          <div class="ik-field">
+            <label class="ik-lbl">REST API Key *</label>
+            <input type="password" id="os-api-key" class="ik-inp" placeholder="REST API Key dari dashboard OneSignal" oninput="saveOsConfig()">
+            <div style="font-size:10px;color:var(--text3);margin-top:3px">🔒 Tersimpan di browser, tidak dikirim ke server</div>
+          </div>
+        </div>
+        <button onclick="testOsConnection()" style="padding:8px 14px;background:var(--green-light);color:var(--green);border:1.5px solid var(--green);border-radius:var(--r-sm);font-size:12px;font-weight:700;cursor:pointer">🔗 Test Koneksi</button>
+        <span id="bc-test-result" style="font-size:11px;font-weight:700;margin-left:8px"></span>
+      </div>
+    </div>
+
+    <!-- Form Kirim Push Notification -->
     <div class="card" style="margin-bottom:12px">
       <div class="card-hdr">
-        📣 Kirim Pengumuman ke Semua Pengguna
-        <span style="background:var(--red-light);color:var(--red);font-size:10px;font-weight:800;padding:2px 8px;border-radius:var(--r-full)">BROADCAST</span>
+        📣 Kirim Push Notification
+        <span style="background:var(--red-light);color:var(--red);font-size:10px;font-weight:800;padding:2px 8px;border-radius:var(--r-full)">LIVE ke HP</span>
       </div>
       <div style="padding:14px">
 
-        <!-- Target Penerima -->
+        <!-- Mode: Kirim Sekarang atau Jadwal -->
         <div class="ik-field" style="margin-bottom:11px">
-          <label class="ik-lbl">🎯 Target Penerima</label>
-          <select id="bc-target" class="ik-inp" onchange="updateBcTargetInfo()">
-            <option value="all">📢 Semua Pengguna</option>
-            <option value="active">✅ Hanya Pengguna Aktif</option>
-            <option value="specific">👤 Pengguna Tertentu</option>
-          </select>
-          <div id="bc-target-info" style="font-size:11px;color:var(--text3);margin-top:4px;font-weight:600"></div>
+          <label class="ik-lbl">⏰ Mode Pengiriman</label>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <div class="bc-mode-btn active" id="mode-now" onclick="setBcMode('now')">⚡ Kirim Sekarang</div>
+            <div class="bc-mode-btn" id="mode-schedule" onclick="setBcMode('schedule')">🗓️ Jadwalkan</div>
+            <div class="bc-mode-btn" id="mode-auto" onclick="setBcMode('auto')">🔄 Otomatis Berulang</div>
+          </div>
         </div>
 
-        <!-- Pilih User (muncul saat specific) -->
-        <div class="ik-field" id="bc-specific-wrap" style="display:none;margin-bottom:11px">
-          <label class="ik-lbl">👤 Cari & Pilih Pengguna</label>
-          <input type="text" id="bc-user-search" class="ik-inp" placeholder="Ketik nama atau email..." oninput="renderBcUserList()">
-          <div id="bc-user-list" style="max-height:160px;overflow-y:auto;border:1.5px solid var(--border);border-top:none;border-radius:0 0 var(--r-sm) var(--r-sm);background:var(--white)"></div>
-          <div id="bc-selected-users" style="display:flex;flex-wrap:wrap;gap:5px;margin-top:6px"></div>
+        <!-- Pilihan Jadwal (muncul saat schedule) -->
+        <div id="bc-schedule-wrap" style="display:none">
+          <div class="ik-field" style="margin-bottom:11px">
+            <label class="ik-lbl">📅 Tanggal & Jam Kirim</label>
+            <input type="datetime-local" id="bc-schedule-time" class="ik-inp">
+            <div style="font-size:10px;color:var(--text3);margin-top:3px">⏰ Notifikasi akan dikirim tepat pada waktu yang ditentukan</div>
+          </div>
+        </div>
+
+        <!-- Pilihan Otomatis Berulang -->
+        <div id="bc-auto-wrap" style="display:none;background:var(--blue-soft);border:1.5px solid var(--blue-light);border-radius:var(--r-sm);padding:12px;margin-bottom:11px">
+          <div style="font-size:11px;font-weight:800;color:var(--blue);margin-bottom:10px">🔄 Pengaturan Otomatis Berulang</div>
+          <div class="ik-row">
+            <div class="ik-field">
+              <label class="ik-lbl">Ulangi Setiap</label>
+              <select id="bc-repeat-type" class="ik-inp" onchange="updateRepeatOptions()">
+                <option value="daily">📅 Setiap Hari</option>
+                <option value="weekly">📆 Setiap Minggu</option>
+                <option value="custom">⚙️ Jam Tertentu</option>
+              </select>
+            </div>
+            <div class="ik-field">
+              <label class="ik-lbl">Jam Kirim</label>
+              <input type="time" id="bc-repeat-time" class="ik-inp" value="09:00">
+            </div>
+          </div>
+          <div id="bc-weekly-wrap" style="display:none;margin-bottom:8px">
+            <label class="ik-lbl" style="display:block;margin-bottom:6px">Hari Pengiriman</label>
+            <div style="display:flex;gap:5px;flex-wrap:wrap">
+              <label class="bc-day-chk"><input type="checkbox" value="1" checked> Sen</label>
+              <label class="bc-day-chk"><input type="checkbox" value="2"> Sel</label>
+              <label class="bc-day-chk"><input type="checkbox" value="3"> Rab</label>
+              <label class="bc-day-chk"><input type="checkbox" value="4"> Kam</label>
+              <label class="bc-day-chk"><input type="checkbox" value="5"> Jum</label>
+              <label class="bc-day-chk"><input type="checkbox" value="6"> Sab</label>
+              <label class="bc-day-chk"><input type="checkbox" value="0"> Min</label>
+            </div>
+          </div>
+          <div id="bc-custom-hours-wrap" style="display:none;margin-bottom:8px">
+            <label class="ik-lbl" style="display:block;margin-bottom:6px">Pilih Jam-Jam Pengiriman</label>
+            <div style="display:flex;gap:5px;flex-wrap:wrap" id="bc-hour-chips"></div>
+          </div>
+          <div style="background:var(--white);border-radius:8px;padding:8px 10px;font-size:11px;color:var(--text2)">
+            📋 Jadwal tersimpan di browser ini. Admin panel harus terbuka agar jadwal berjalan.
+          </div>
         </div>
 
         <!-- Tipe Notifikasi -->
@@ -555,39 +627,48 @@ textarea.ik-inp{resize:vertical}
         <!-- Pesan -->
         <div class="ik-field" style="margin-bottom:11px">
           <label class="ik-lbl">💬 Isi Pesan *</label>
-          <textarea id="bc-message" class="ik-inp" style="min-height:90px;resize:vertical" placeholder="Tulis pesan pengumuman di sini..."></textarea>
+          <textarea id="bc-message" class="ik-inp" style="min-height:80px;resize:vertical" placeholder="Tulis pesan pengumuman di sini..."></textarea>
         </div>
 
         <!-- Link (opsional) -->
         <div class="ik-field" style="margin-bottom:14px">
-          <label class="ik-lbl">🔗 Link Tujuan (opsional)</label>
-          <input type="url" id="bc-link" class="ik-inp" placeholder="https://wa.me/62...">
+          <label class="ik-lbl">🔗 Link / URL Tujuan (opsional)</label>
+          <input type="url" id="bc-link" class="ik-inp" placeholder="https://...">
         </div>
 
-        <!-- Preview -->
-        <div id="bc-preview-wrap" style="display:none;background:var(--blue-soft);border:1.5px solid var(--blue-light);border-radius:var(--r-sm);padding:12px;margin-bottom:14px">
-          <div style="font-size:10px;font-weight:800;color:var(--blue);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px">👁 Preview Notifikasi</div>
-          <div style="display:flex;gap:10px;align-items:flex-start">
-            <div id="bc-prev-ico" style="width:36px;height:36px;border-radius:9px;background:var(--blue);color:white;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0">📣</div>
-            <div>
-              <div id="bc-prev-title" style="font-weight:800;font-size:13px;margin-bottom:3px"></div>
-              <div id="bc-prev-msg" style="font-size:12px;color:var(--text2);line-height:1.4"></div>
-              <div style="font-size:10px;color:var(--text3);margin-top:4px">Baru saja • Betta Market Batam</div>
+        <!-- Preview Push Notification -->
+        <div id="bc-preview-wrap" style="display:none;margin-bottom:14px">
+          <div style="font-size:10px;font-weight:800;color:var(--text2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px">👁 Preview di HP</div>
+          <div style="background:#1c1c1e;border-radius:14px;padding:12px 14px;display:flex;gap:10px;align-items:flex-start">
+            <div id="bc-prev-ico" style="width:36px;height:36px;border-radius:9px;background:var(--blue);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">📣</div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px">
+                <div style="font-size:10px;color:rgba(255,255,255,.5);font-weight:600">BETTA MARKET BATAM</div>
+                <div style="font-size:10px;color:rgba(255,255,255,.4)">sekarang</div>
+              </div>
+              <div id="bc-prev-title" style="font-weight:700;font-size:13px;color:white;margin-bottom:2px"></div>
+              <div id="bc-prev-msg" style="font-size:12px;color:rgba(255,255,255,.7);line-height:1.4"></div>
             </div>
           </div>
         </div>
 
         <!-- Tombol -->
         <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <button class="btn-ik-save" onclick="bcPreview()" style="flex:1;min-width:100px;background:linear-gradient(135deg,var(--text2),var(--text))">👁 Preview</button>
+          <button class="btn-ik-save" onclick="bcPreview()" style="flex:1;min-width:90px;background:linear-gradient(135deg,var(--text2),var(--text))">👁 Preview</button>
           <button class="btn-ik-save" id="btn-bc-send" onclick="bcSend()" style="flex:2;min-width:140px">📣 Kirim Sekarang</button>
         </div>
       </div>
     </div>
 
+    <!-- Jadwal Aktif -->
+    <div class="card" style="margin-bottom:12px" id="bc-schedules-card" style="display:none">
+      <div class="card-hdr">🗓️ Jadwal Aktif <span id="bc-sched-count"></span></div>
+      <div id="bc-sched-list"></div>
+    </div>
+
     <!-- Riwayat Pengumuman -->
     <div class="card">
-      <div class="card-hdr">📜 Riwayat Pengumuman <span id="bc-history-count"></span></div>
+      <div class="card-hdr">📜 Riwayat Terkirim <span id="bc-history-count"></span></div>
       <div id="bc-history-list"></div>
     </div>
 
@@ -943,7 +1024,13 @@ window.showTab = function(tab, el) {
   if (tab === 'posts')     renderPosts();
   if (tab === 'notifs')    renderNotifsAdmin();
   if (tab === 'iklan')     loadIklanList();
-  if (tab === 'broadcast') { updateBcTargetInfo(); loadBcHistory(); }
+  if (tab === 'broadcast') {
+    loadOsConfig();
+    initHourChips();
+    loadBcSchedulesFromStorage();
+    renderBcSchedules();
+    loadBcHistory();
+  }
 };
 
 window.filterPostType = function(t, el) {
@@ -1387,231 +1474,406 @@ window.doLogout = async function() {
   } catch(e) { console.error('Logout error:', e); }
 };
 
-// ── BROADCAST / PENGUMUMAN ──
+// ── BROADCAST / PUSH NOTIFICATION VIA ONESIGNAL ──
 let bcSelectedUsers = [];
+let bcMode = 'now';
+let bcScheduleTimers = [];
+let bcActiveSchedules = [];
 
 const BC_TYPE_CONFIG = {
-  announcement: { icon: '📣', color: 'var(--blue)',   bg: 'var(--blue-light)' },
-  promo:        { icon: '🎁', color: 'var(--green)',  bg: 'var(--green-light)' },
-  event:        { icon: '🗓️', color: 'var(--gold)',   bg: 'var(--gold-light)' },
-  warning:      { icon: '⚠️', color: 'var(--red)',    bg: 'var(--red-light)' },
-  info:         { icon: 'ℹ️', color: 'var(--blue)',   bg: 'var(--blue-soft)' },
+  announcement: { icon: '📣', color: '#1a6bcc', bg: 'var(--blue-light)' },
+  promo:        { icon: '🎁', color: '#15a362', bg: 'var(--green-light)' },
+  event:        { icon: '🗓️', color: '#d97706', bg: 'var(--gold-light)' },
+  warning:      { icon: '⚠️', color: '#e03e2d', bg: 'var(--red-light)' },
+  info:         { icon: 'ℹ️', color: '#1a6bcc', bg: 'var(--blue-soft)' },
 };
 
-window.updateBcTargetInfo = function() {
-  const target = document.getElementById('bc-target').value;
-  const info   = document.getElementById('bc-target-info');
-  const wrap   = document.getElementById('bc-specific-wrap');
-
-  if (target === 'all') {
-    info.textContent = `📢 Akan dikirim ke ${allUsers.length} pengguna`;
-    wrap.style.display = 'none';
-  } else if (target === 'active') {
-    const active = allUsers.filter(u => !u.blocked).length;
-    info.textContent = `✅ Akan dikirim ke ${active} pengguna aktif`;
-    wrap.style.display = 'none';
-  } else {
-    info.textContent = '👤 Pilih pengguna dari daftar di bawah';
-    wrap.style.display = '';
-    renderBcUserList();
+// ── OneSignal Config (simpan di localStorage browser) ──
+window.saveOsConfig = function() {
+  const appId  = document.getElementById('os-app-id').value.trim();
+  const apiKey = document.getElementById('os-api-key').value.trim();
+  if (appId)  localStorage.setItem('os_app_id',  appId);
+  if (apiKey) localStorage.setItem('os_api_key', apiKey);
+  const status = document.getElementById('bc-config-status');
+  if (appId && apiKey) {
+    status.textContent = '✅ Tersimpan';
+    status.style.background = 'var(--green-light)';
+    status.style.color = 'var(--green)';
   }
 };
 
-window.renderBcUserList = function() {
-  const q = (document.getElementById('bc-user-search')?.value || '').toLowerCase().trim();
-  const filtered = allUsers
-    .filter(u => !bcSelectedUsers.find(s => s.id === u.id))
-    .filter(u => !q || u.name?.toLowerCase().includes(q) || u.email?.toLowerCase().includes(q));
-
-  const c = document.getElementById('bc-user-list');
-  if (!filtered.length) {
-    c.innerHTML = '<div style="padding:10px;text-align:center;font-size:12px;color:var(--text3)">Tidak ditemukan</div>';
-    return;
+function loadOsConfig() {
+  const appId  = localStorage.getItem('os_app_id')  || '';
+  const apiKey = localStorage.getItem('os_api_key') || '';
+  if (appId)  document.getElementById('os-app-id').value  = appId;
+  if (apiKey) document.getElementById('os-api-key').value = apiKey;
+  if (appId && apiKey) {
+    const s = document.getElementById('bc-config-status');
+    s.textContent = '✅ Tersimpan'; s.style.background = 'var(--green-light)'; s.style.color = 'var(--green)';
   }
-  c.innerHTML = filtered.slice(0, 20).map(u =>
-    `<div class="bc-user-item" onclick="bcSelectUser('${u.id}')">
-      <div style="width:26px;height:26px;border-radius:6px;background:var(--blue);color:white;font-weight:800;font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0">${(u.name?.[0]||'U').toUpperCase()}</div>
-      <div style="flex:1;min-width:0">
-        <div style="font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${u.name||'(tanpa nama)'}</div>
-        <div style="font-size:10px;color:var(--text3)">${u.email||u.phone||'-'}</div>
-      </div>
-      <span style="font-size:10px;color:var(--blue);font-weight:700">+ Pilih</span>
-    </div>`
-  ).join('');
-};
-
-window.bcSelectUser = function(id) {
-  const u = allUsers.find(u => u.id === id);
-  if (!u || bcSelectedUsers.find(s => s.id === id)) return;
-  bcSelectedUsers.push(u);
-  renderBcSelectedTags();
-  renderBcUserList();
-  const info = document.getElementById('bc-target-info');
-  info.textContent = `👤 ${bcSelectedUsers.length} pengguna dipilih`;
-};
-
-window.bcRemoveUser = function(id) {
-  bcSelectedUsers = bcSelectedUsers.filter(u => u.id !== id);
-  renderBcSelectedTags();
-  renderBcUserList();
-  const info = document.getElementById('bc-target-info');
-  info.textContent = bcSelectedUsers.length
-    ? `👤 ${bcSelectedUsers.length} pengguna dipilih`
-    : '👤 Pilih pengguna dari daftar di bawah';
-};
-
-function renderBcSelectedTags() {
-  document.getElementById('bc-selected-users').innerHTML = bcSelectedUsers.map(u =>
-    `<div class="bc-tag">
-      ${u.name||'User'}
-      <button onclick="bcRemoveUser('${u.id}')" title="Hapus">×</button>
-    </div>`
-  ).join('');
 }
 
+window.testOsConnection = async function() {
+  const appId  = localStorage.getItem('os_app_id');
+  const apiKey = localStorage.getItem('os_api_key');
+  const res    = document.getElementById('bc-test-result');
+  if (!appId || !apiKey) { res.textContent = '⚠️ Isi App ID & API Key dulu'; res.style.color='var(--gold)'; return; }
+  res.textContent = '⏳ Memeriksa...'; res.style.color = 'var(--text3)';
+  try {
+    const r = await fetch(`https://onesignal.com/api/v1/apps/${appId}`, {
+      headers: { Authorization: `Basic ${apiKey}` }
+    });
+    if (r.ok) {
+      const data = await r.json();
+      res.textContent = `✅ Terhubung! (${data.players || 0} perangkat)`;
+      res.style.color = 'var(--green)';
+    } else {
+      res.textContent = '❌ API Key salah atau App ID tidak valid';
+      res.style.color = 'var(--red)';
+    }
+  } catch(e) {
+    res.textContent = '❌ Gagal terhubung: ' + e.message;
+    res.style.color = 'var(--red)';
+  }
+};
+
+// ── Mode Pengiriman ──
+window.setBcMode = function(mode) {
+  bcMode = mode;
+  ['now','schedule','auto'].forEach(m => {
+    document.getElementById('mode-'+m).classList.toggle('active', m === mode);
+  });
+  document.getElementById('bc-schedule-wrap').style.display = mode === 'schedule' ? '' : 'none';
+  document.getElementById('bc-auto-wrap').style.display     = mode === 'auto'     ? '' : 'none';
+  const btn = document.getElementById('btn-bc-send');
+  btn.textContent = mode === 'auto' ? '🔄 Aktifkan Jadwal Otomatis' : mode === 'schedule' ? '🗓️ Simpan Jadwal' : '📣 Kirim Sekarang';
+};
+
+window.updateRepeatOptions = function() {
+  const type = document.getElementById('bc-repeat-type').value;
+  document.getElementById('bc-weekly-wrap').style.display       = type === 'weekly' ? '' : 'none';
+  document.getElementById('bc-custom-hours-wrap').style.display = type === 'custom' ? '' : 'none';
+};
+
+// Init chip jam (00:00 - 23:00)
+function initHourChips() {
+  const wrap = document.getElementById('bc-hour-chips');
+  if (!wrap) return;
+  wrap.innerHTML = Array.from({length:24}, (_,h) => {
+    const label = String(h).padStart(2,'0') + ':00';
+    return `<div class="bc-hour-chip" onclick="this.classList.toggle('active')">${label}</div>`;
+  }).join('');
+}
+
+// ── Kirim Push via OneSignal REST API ──
+async function sendOnesignalPush({ title, message, url, type }) {
+  const appId  = localStorage.getItem('os_app_id');
+  const apiKey = localStorage.getItem('os_api_key');
+  if (!appId || !apiKey) throw new Error('OneSignal App ID / API Key belum diisi di konfigurasi');
+
+  const cfg = BC_TYPE_CONFIG[type] || BC_TYPE_CONFIG.announcement;
+  const body = {
+    app_id           : appId,
+    included_segments: ['All'],          // Kirim ke semua subscriber
+    headings         : { en: title },
+    contents         : { en: message },
+    data             : { type, icon: cfg.icon },
+  };
+  if (url) body.url = url;
+
+  const resp = await fetch('https://onesignal.com/api/v1/notifications', {
+    method : 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Basic ${apiKey}` },
+    body   : JSON.stringify(body),
+  });
+  const result = await resp.json();
+  if (result.errors) throw new Error(JSON.stringify(result.errors));
+  return result; // { id, recipients }
+}
+
+// ── Preview ──
 window.bcPreview = function() {
   const title = document.getElementById('bc-title').value.trim();
   const msg   = document.getElementById('bc-message').value.trim();
   const type  = document.getElementById('bc-type').value;
   if (!title && !msg) { showToast('Isi judul dan pesan dulu'); return; }
   const cfg = BC_TYPE_CONFIG[type] || BC_TYPE_CONFIG.announcement;
-  const wrap = document.getElementById('bc-preview-wrap');
-  document.getElementById('bc-prev-ico').textContent   = cfg.icon;
+  document.getElementById('bc-prev-ico').textContent      = cfg.icon;
   document.getElementById('bc-prev-ico').style.background = cfg.color;
-  document.getElementById('bc-prev-title').textContent = title || '(judul kosong)';
-  document.getElementById('bc-prev-msg').textContent   = msg   || '(pesan kosong)';
-  wrap.style.display = '';
-  wrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  document.getElementById('bc-prev-title').textContent    = title || '(judul kosong)';
+  document.getElementById('bc-prev-msg').textContent      = msg   || '(pesan kosong)';
+  document.getElementById('bc-preview-wrap').style.display = '';
+  document.getElementById('bc-preview-wrap').scrollIntoView({ behavior:'smooth', block:'nearest' });
 };
 
+// ── Kirim / Jadwal / Otomatis ──
 window.bcSend = async function() {
   requireAuth(async () => {
-    const title  = document.getElementById('bc-title').value.trim();
-    const msg    = document.getElementById('bc-message').value.trim();
-    const type   = document.getElementById('bc-type').value;
-    const target = document.getElementById('bc-target').value;
-    const link   = document.getElementById('bc-link').value.trim() || null;
-
+    const title = document.getElementById('bc-title').value.trim();
+    const msg   = document.getElementById('bc-message').value.trim();
+    const type  = document.getElementById('bc-type').value;
+    const link  = document.getElementById('bc-link').value.trim() || null;
     if (!title) { showToast('⚠️ Judul wajib diisi'); return; }
     if (!msg)   { showToast('⚠️ Pesan wajib diisi'); return; }
 
-    // Tentukan penerima
-    let recipients = [];
-    if (target === 'all')      recipients = allUsers;
-    else if (target === 'active') recipients = allUsers.filter(u => !u.blocked);
-    else {
-      if (!bcSelectedUsers.length) { showToast('⚠️ Pilih minimal 1 pengguna'); return; }
-      recipients = bcSelectedUsers;
+    // ── MODE: JADWAL ──
+    if (bcMode === 'schedule') {
+      const schedTime = document.getElementById('bc-schedule-time').value;
+      if (!schedTime) { showToast('⚠️ Pilih tanggal & jam dulu'); return; }
+      const sendAt = new Date(schedTime);
+      if (sendAt <= new Date()) { showToast('⚠️ Waktu jadwal harus di masa depan'); return; }
+
+      const sched = { id: Date.now(), title, msg, type, link, sendAt: sendAt.getTime(), mode:'once' };
+      bcActiveSchedules.push(sched);
+      saveBcSchedules();
+      startSchedTimer(sched);
+      showToast(`🗓️ Dijadwalkan: ${sendAt.toLocaleString('id-ID')}`);
+      renderBcSchedules();
+      return;
     }
 
-    if (!recipients.length) { showToast('⚠️ Tidak ada pengguna untuk dikirim'); return; }
+    // ── MODE: OTOMATIS BERULANG ──
+    if (bcMode === 'auto') {
+      const repeatType = document.getElementById('bc-repeat-type').value;
+      const repeatTime = document.getElementById('bc-repeat-time').value;
+      if (!repeatTime) { showToast('⚠️ Pilih jam pengiriman'); return; }
 
-    const confirmed = window.confirm(
-      `📣 Kirim pengumuman ke ${recipients.length} pengguna?\n\n"${title}"`
-    );
-    if (!confirmed) return;
-
-    showLoading(`Mengirim ke ${recipients.length} pengguna…`);
-    const btn = document.getElementById('btn-bc-send');
-    btn.disabled = true;
-
-    try {
-      const cfg       = BC_TYPE_CONFIG[type] || BC_TYPE_CONFIG.announcement;
-      const batchSize = 20;
-      let sent = 0;
-
-      // Kirim notifikasi ke setiap pengguna
-      for (let i = 0; i < recipients.length; i += batchSize) {
-        const chunk = recipients.slice(i, i + batchSize);
-        await Promise.all(chunk.map(u =>
-          addDoc(collection(db, 'notifications'), {
-            toUserId   : u.id,
-            fromName   : 'Admin Betta Market',
-            type       : 'broadcast',
-            subtype    : type,
-            icon       : cfg.icon,
-            title      : title,
-            text       : msg,
-            linkUrl    : link,
-            read       : false,
-            createdAt  : serverTimestamp(),
-          })
-        ));
-        sent += chunk.length;
-        document.getElementById('loading-msg').textContent = `Mengirim… ${sent}/${recipients.length}`;
+      let days = [], customHours = [];
+      if (repeatType === 'weekly') {
+        days = [...document.querySelectorAll('.bc-day-chk input:checked')].map(el => Number(el.value));
+        if (!days.length) { showToast('⚠️ Pilih minimal 1 hari'); return; }
       }
+      if (repeatType === 'custom') {
+        customHours = [...document.querySelectorAll('.bc-hour-chip.active')].map(el => el.textContent.split(':')[0]);
+        if (!customHours.length) { showToast('⚠️ Pilih minimal 1 jam'); return; }
+      }
+
+      const sched = {
+        id: Date.now(), title, msg, type, link,
+        mode: 'repeat', repeatType, repeatTime, days, customHours,
+        label: repeatType === 'daily' ? `Setiap hari jam ${repeatTime}`
+             : repeatType === 'weekly' ? `Setiap minggu jam ${repeatTime}`
+             : `Jam-jam terpilih setiap hari`
+      };
+      bcActiveSchedules.push(sched);
+      saveBcSchedules();
+      startRepeatTimer(sched);
+      showToast(`🔄 Jadwal otomatis aktif: ${sched.label}`);
+      renderBcSchedules();
+      return;
+    }
+
+    // ── MODE: KIRIM SEKARANG ──
+    if (!window.confirm(`📣 Kirim push notification ke semua pengguna?\n\n"${title}"`)) return;
+    showLoading('Mengirim push notification…');
+    document.getElementById('btn-bc-send').disabled = true;
+    try {
+      const result = await sendOnesignalPush({ title, message: msg, url: link, type });
+
+      // Simpan ke Firestore juga (opsional: untuk riwayat in-app)
+      await addDoc(collection(db, 'notifications'), {
+        toUserId : null, // null = broadcast ke semua
+        fromName : 'Admin Betta Market',
+        type     : 'broadcast',
+        subtype  : type,
+        icon     : (BC_TYPE_CONFIG[type]||BC_TYPE_CONFIG.announcement).icon,
+        title, text: msg, linkUrl: link,
+        read     : false,
+        osNotifId: result.id || null,
+        recipients: result.recipients || 0,
+        createdAt: serverTimestamp(),
+      });
 
       // Simpan riwayat broadcast
       await addDoc(collection(db, 'broadcasts'), {
-        title,
-        message    : msg,
-        type,
-        icon       : cfg.icon,
-        target,
-        targetCount: recipients.length,
-        linkUrl    : link,
-        sentAt     : serverTimestamp(),
-        sentBy     : auth.currentUser?.email || 'admin',
+        title, message: msg, type,
+        icon      : (BC_TYPE_CONFIG[type]||BC_TYPE_CONFIG.announcement).icon,
+        target    : 'all',
+        targetCount: result.recipients || 0,
+        linkUrl   : link,
+        osNotifId : result.id || null,
+        sentAt    : serverTimestamp(),
+        sentBy    : auth.currentUser?.email || 'admin',
+        channel   : 'onesignal',
       });
 
-      showToast(`✅ Pengumuman terkirim ke ${recipients.length} pengguna!`);
-
-      // Reset form
+      showToast(`✅ Terkirim ke ${result.recipients || 0} perangkat!`);
       ['bc-title','bc-message','bc-link'].forEach(id => document.getElementById(id).value = '');
-      document.getElementById('bc-type').value   = 'announcement';
-      document.getElementById('bc-target').value = 'all';
       document.getElementById('bc-preview-wrap').style.display = 'none';
-      bcSelectedUsers = [];
-      renderBcSelectedTags();
-      updateBcTargetInfo();
-
-      // Reload riwayat
       await loadBcHistory();
-
     } catch(e) {
       showToast('❌ Gagal kirim: ' + e.message);
       console.error(e);
     } finally {
       hideLoading();
-      btn.disabled = false;
+      document.getElementById('btn-bc-send').disabled = false;
     }
   });
 };
 
+// ── Timer untuk jadwal ──
+function startSchedTimer(sched) {
+  const delay = sched.sendAt - Date.now();
+  if (delay <= 0) return;
+  const t = setTimeout(async () => {
+    try {
+      const result = await sendOnesignalPush({ title: sched.title, message: sched.msg, url: sched.link, type: sched.type });
+      await addDoc(collection(db, 'broadcasts'), {
+        title: sched.title, message: sched.msg, type: sched.type,
+        icon: (BC_TYPE_CONFIG[sched.type]||BC_TYPE_CONFIG.announcement).icon,
+        target:'all', targetCount: result.recipients||0,
+        linkUrl: sched.link, osNotifId: result.id||null,
+        sentAt: serverTimestamp(), sentBy: 'auto-schedule', channel:'onesignal',
+      });
+      showToast(`✅ Jadwal terkirim: "${sched.title}"`);
+    } catch(e) { showToast('❌ Jadwal gagal: '+e.message); }
+    // Hapus dari daftar
+    bcActiveSchedules = bcActiveSchedules.filter(s => s.id !== sched.id);
+    saveBcSchedules();
+    renderBcSchedules();
+    await loadBcHistory();
+  }, delay);
+  bcScheduleTimers.push({ id: sched.id, timer: t });
+}
+
+function startRepeatTimer(sched) {
+  function scheduleNext() {
+    const now  = new Date();
+    let nextMs = null;
+
+    if (sched.repeatType === 'daily') {
+      const [h,m] = sched.repeatTime.split(':').map(Number);
+      const next  = new Date(now); next.setHours(h,m,0,0);
+      if (next <= now) next.setDate(next.getDate()+1);
+      nextMs = next.getTime() - now.getTime();
+
+    } else if (sched.repeatType === 'weekly') {
+      const [h,m] = sched.repeatTime.split(':').map(Number);
+      let minDiff = Infinity, nextDate = null;
+      sched.days.forEach(d => {
+        const nd = new Date(now); nd.setHours(h,m,0,0);
+        let diff = ((d - now.getDay()) + 7) % 7;
+        if (diff === 0 && nd <= now) diff = 7;
+        nd.setDate(nd.getDate()+diff);
+        if (nd.getTime() - now.getTime() < minDiff) { minDiff = nd.getTime()-now.getTime(); nextDate = nd; }
+      });
+      nextMs = minDiff;
+
+    } else if (sched.repeatType === 'custom') {
+      let minDiff = Infinity;
+      sched.customHours.forEach(hStr => {
+        const h = Number(hStr);
+        const nd = new Date(now); nd.setHours(h,0,0,0);
+        if (nd <= now) nd.setDate(nd.getDate()+1);
+        const diff = nd.getTime()-now.getTime();
+        if (diff < minDiff) minDiff = diff;
+      });
+      nextMs = minDiff;
+    }
+
+    if (nextMs === null || !bcActiveSchedules.find(s=>s.id===sched.id)) return;
+    const t = setTimeout(async () => {
+      if (!bcActiveSchedules.find(s=>s.id===sched.id)) return;
+      try {
+        const result = await sendOnesignalPush({title:sched.title,message:sched.msg,url:sched.link,type:sched.type});
+        await addDoc(collection(db,'broadcasts'),{
+          title:sched.title,message:sched.msg,type:sched.type,
+          icon:(BC_TYPE_CONFIG[sched.type]||BC_TYPE_CONFIG.announcement).icon,
+          target:'all',targetCount:result.recipients||0,
+          linkUrl:sched.link,osNotifId:result.id||null,
+          sentAt:serverTimestamp(),sentBy:'auto-repeat',channel:'onesignal',
+        });
+        showToast(`🔄 Auto terkirim: "${sched.title}"`);
+        await loadBcHistory();
+      } catch(e){showToast('❌ Auto gagal: '+e.message);}
+      scheduleNext(); // Jadwalkan lagi
+    }, nextMs);
+    bcScheduleTimers.push({id:sched.id+'_r'+Date.now(), timer:t});
+  }
+  scheduleNext();
+}
+
+// ── Persist jadwal di localStorage ──
+function saveBcSchedules() {
+  localStorage.setItem('bc_schedules', JSON.stringify(bcActiveSchedules));
+}
+function loadBcSchedulesFromStorage() {
+  try {
+    const raw = localStorage.getItem('bc_schedules');
+    if (!raw) return;
+    const list = JSON.parse(raw);
+    list.forEach(s => {
+      bcActiveSchedules.push(s);
+      if (s.mode === 'once') startSchedTimer(s);
+      else if (s.mode === 'repeat') startRepeatTimer(s);
+    });
+    renderBcSchedules();
+  } catch(e) {}
+}
+
+window.bcDeleteSchedule = function(id) {
+  bcActiveSchedules = bcActiveSchedules.filter(s => s.id !== id);
+  const t = bcScheduleTimers.find(t => t.id === id);
+  if (t) { clearTimeout(t.timer); bcScheduleTimers = bcScheduleTimers.filter(t=>t.id!==id); }
+  saveBcSchedules();
+  renderBcSchedules();
+  showToast('🗑️ Jadwal dihapus');
+};
+
+function renderBcSchedules() {
+  const card = document.getElementById('bc-schedules-card');
+  const list = document.getElementById('bc-sched-list');
+  const cnt  = document.getElementById('bc-sched-count');
+  if (!bcActiveSchedules.length) { card.style.display='none'; return; }
+  card.style.display = '';
+  cnt.textContent = bcActiveSchedules.length + ' aktif';
+  list.innerHTML = bcActiveSchedules.map(s => {
+    const cfg = BC_TYPE_CONFIG[s.type]||BC_TYPE_CONFIG.announcement;
+    const timeLabel = s.mode==='once'
+      ? `🗓️ ${new Date(s.sendAt).toLocaleString('id-ID')}`
+      : `🔄 ${s.label}`;
+    return `<div class="bc-sched-row">
+      <div style="width:32px;height:32px;border-radius:8px;background:${cfg.bg};display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0">${cfg.icon}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:700;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.title}</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:1px">${timeLabel}</div>
+      </div>
+      <button onclick="bcDeleteSchedule(${s.id})" class="bsm b-del" style="flex-shrink:0">🗑</button>
+    </div>`;
+  }).join('');
+}
+
 async function loadBcHistory() {
   try {
-    const snap = await getDocs(query(collection(db, 'broadcasts'), orderBy('sentAt', 'desc')));
-    const list = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const snap = await getDocs(query(collection(db,'broadcasts'), orderBy('sentAt','desc')));
+    const list = snap.docs.map(d=>({id:d.id,...d.data()}));
     const c = document.getElementById('bc-history-list');
     document.getElementById('bc-history-count').textContent = list.length + ' terkirim';
-
     if (!list.length) {
       c.innerHTML = '<div class="empty"><div class="ei">📣</div><p>Belum ada pengumuman dikirim</p></div>';
       return;
     }
     c.innerHTML = list.map(b => {
-      const cfg = BC_TYPE_CONFIG[b.type] || BC_TYPE_CONFIG.announcement;
+      const cfg = BC_TYPE_CONFIG[b.type]||BC_TYPE_CONFIG.announcement;
       const t   = b.sentAt?.toDate
-        ? b.sentAt.toDate().toLocaleString('id-ID', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' })
+        ? b.sentAt.toDate().toLocaleString('id-ID',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})
         : 'Baru saja';
-      const targetLabel = b.target === 'all' ? 'Semua' : b.target === 'active' ? 'Aktif' : 'Tertentu';
+      const byLabel = b.sentBy==='auto-schedule'?'🗓️ Terjadwal':b.sentBy==='auto-repeat'?'🔄 Otomatis':`👤 ${b.sentBy||'admin'}`;
       return `<div class="bc-hist-row">
-        <div class="bc-hist-ico" style="background:${cfg.bg}">${b.icon || cfg.icon}</div>
+        <div class="bc-hist-ico" style="background:${cfg.bg}">${b.icon||cfg.icon}</div>
         <div class="bc-hist-info">
           <div class="bc-hist-title">${b.title}</div>
           <div class="bc-hist-msg">${b.message}</div>
           <div class="bc-hist-meta">
             <span>🕐 ${t}</span>
-            <span>👥 ${b.targetCount} penerima (${targetLabel})</span>
-            <span>👤 ${b.sentBy||'admin'}</span>
+            <span>📱 ${b.targetCount||0} perangkat</span>
+            <span>${byLabel}</span>
           </div>
         </div>
         <span class="bc-hist-badge">${cfg.icon} ${b.type}</span>
       </div>`;
     }).join('');
-  } catch(e) {
-    console.warn('Gagal load riwayat broadcast:', e);
-  }
+  } catch(e) { console.warn('Gagal load riwayat:', e); }
 }
 
 // ── INIT ──
